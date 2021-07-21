@@ -6,6 +6,7 @@ const schemaCreateContact = Joi.object({
   phone: Joi.string()
     .pattern(/^[(][\d]{3}[)]\s[\d]{3}[-][\d]{4}/)
     .required(),
+  favorite: Joi.boolean().default(false),
 })
 
 const schemaUpdateContact = Joi.object({
@@ -14,23 +15,32 @@ const schemaUpdateContact = Joi.object({
   phone: Joi.string()
     .pattern(/^[(][\d]{3}[)]\s[\d]{3}[-][\d]{4}/)
     .optional(),
+  favorite: Joi.boolean().default(false),
 })
 
-const validate = (schema, obj, next) => {
-  const { error } = schema.validate(obj)
+const schemaUpdateStatusContact = Joi.object({
+  favorite: Joi.boolean().default(false),
+})
+
+const validate = (schema, body, next) => {
+  const { error } = schema.validate(body)
   if (error) {
+    const [{ message }] = error.details
     return next({
       status: 400,
-      message: 'Missing required name field',
+      message,
+      data: 'Bad request',
     })
   }
   next()
 }
 
-module.exports.createContact = (req, res, next) => {
+module.exports.createValidateContact = (req, res, next) => {
   return validate(schemaCreateContact, req.body, next)
 }
-
-module.exports.updateContact = (req, res, next) => {
+module.exports.updateValidateContact = (req, res, next) => {
   return validate(schemaUpdateContact, req.body, next)
+}
+module.exports.validateUpdateStatus = (req, res, next) => {
+  return validate(schemaUpdateStatusContact, req.body, next)
 }
