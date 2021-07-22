@@ -112,7 +112,7 @@ const updateContact = async (req, res, next) => {
 }
 
 const updateContactStatus = async (req, res, next) => {
-  if (!Object.prototype.hasOwnProperty.call(req.body, 'favorite')) {
+  if (!{}.hasOwnProperty.call(req.body, 'favorite')) {
     res.status(400).json({
       status: 'error',
       code: 400,
