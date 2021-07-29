@@ -17,7 +17,7 @@ const listContacts = async (
     },
     populate: {
       path: 'owner',
-      select: 'email subscription -_id',
+      select: 'email subscription -_id'
     },
   })
   const { docs: contacts, totalDocs: total } = data
@@ -36,8 +36,8 @@ const getContactById = async (contactId, userId) => {
   return data
 }
 
-const addContact = async body => {
-  const data = await Contact.create(body)
+const addContact = async (body, userId) => {
+  const data = await Contact.create({ ...body, owner: userId })
   return data
 }
 
