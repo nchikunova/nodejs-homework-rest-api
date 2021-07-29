@@ -36,7 +36,7 @@ const getContactById = async (contactId, userId) => {
   return data
 }
 
-const addContact = async (body, userId) => {
+const addContact = async (userId, body) => {
   const data = await Contact.create({ ...body, owner: userId })
   return data
 }
