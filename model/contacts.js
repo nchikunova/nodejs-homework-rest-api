@@ -42,7 +42,7 @@ const addContact = async (body, userId) => {
 }
 
 const updateContact = async (contactId, body, userId) => {
-  const data = await Contact.findByIdAndUpdate(
+  const data = await Contact.findOneAndUpdate(
     { _id: contactId, owner: userId },
     { ...body },
     { new: true },
@@ -52,7 +52,7 @@ const updateContact = async (contactId, body, userId) => {
 
 const updateContactStatus = async (userId, contactId, body) => {
   if (Object.keys(body).length !== 0) {
-    const result = await Contact.findByIdAndUpdate(
+    const result = await Contact.findOneAndUpdate(
       { _id: contactId, owner: userId },
       { ...body },
       { new: true },
@@ -64,7 +64,7 @@ const updateContactStatus = async (userId, contactId, body) => {
 }
 
 const removeContact = async (contactId, userId) => {
-  const data = await Contact.findByIdAndRemove({
+  const data = await Contact.findOneAndRemove({
     _id: contactId,
     owner: userId,
   })
