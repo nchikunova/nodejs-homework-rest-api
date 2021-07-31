@@ -26,12 +26,6 @@ const signup = async (req, res, next) => {
       },
     })
   } catch (e) {
-    if (e.name === 'ValidationError' || e.name === 'MongoError') {
-      return next({
-        status: HttpCode.BAD_REQUEST,
-        message: e.message.replace(/"/g, ''),
-      })
-    }
     next(e)
   }
 }
@@ -63,12 +57,6 @@ const login = async (req, res, next) => {
       },
     })
   } catch (e) {
-    if (e.name === 'TypeError') {
-      return next({
-        status: HttpCode.BAD_REQUEST,
-        message: 'Bad request',
-      })
-    }
     next(e)
   }
 }
@@ -114,12 +102,6 @@ const updateSub = async (req, res, next) => {
       },
     })
   } catch (e) {
-    if (e.name === 'CastError') {
-      return next({
-        status: HttpCode.NOT_FOUND,
-        message: 'Not found',
-      })
-    }
     next(e)
   }
 }
