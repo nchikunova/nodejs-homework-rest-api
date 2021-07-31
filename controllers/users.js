@@ -62,9 +62,17 @@ const login = async (req, res, next) => {
 }
 
 const logout = async (req, res, next) => {
-  const id = req.user.id
-  await Users.updateToken(id, null)
-  return res.status(HttpCode.NO_CONTENT).json({})
+  try {
+    const id = req.user.id
+    await Users.updateToken(id, null)
+    return res.json({
+      status: 'success',
+      code: HttpCode.NO_CONTENT,
+      message: 'Successfully logout'
+    })
+  } catch (e) {
+    next(e)
+  }
 }
 
 const currentUser = async (req, res, next) => {
