@@ -3,7 +3,7 @@ const { HttpCode } = require('../service/constants')
 
 const listContacts = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user?.id
     const contacts = await Contacts.listContacts(userId, req.query)
     return res.json({
       status: 'success',
@@ -19,7 +19,7 @@ const listContacts = async (req, res, next) => {
 
 const getContactById = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user?.id
     const contact = await Contacts.getContactById(req.params.contactId, userId)
     if (contact) {
       return res.json({
@@ -43,7 +43,7 @@ const getContactById = async (req, res, next) => {
 
 const addContact = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user?.id
     const contact = await Contacts.addContact(userId, req.body)
     return res.status(HttpCode.CREATED).json({
       status: 'Success',
@@ -65,7 +65,7 @@ const updateContact = async (req, res, next) => {
         message: 'Bad request',
       })
     }
-    const userId = req.user.id
+    const userId = req.user?.id
     const contact = await Contacts.updateContact(
       req.params.contactId,
       req.body,
@@ -130,7 +130,7 @@ const updateContactStatus = async (req, res, next) => {
 
 const removeContact = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user?.id
     const contact = await Contacts.removeContact(req.params.contactId, userId)
     if (contact) {
       return res.json({
