@@ -1,36 +1,74 @@
-const Contact = require('../service/schemas')
+const Contact = require('./schemas/contact')
 
-const listContacts = async () => {
-  const data = await Contact.find({})
+const listContacts = async (
+  userId,
+  { sortBy, sortByDesc, sub, page = '1', limit = '20' },
+) => {
+  const options = { owner: userId }
+  if (sub) {
+    options.subscription = { $all: [sub] }
+  }
+  const data = await Contact.paginate(options, {
+    page,
+    limit,
+    sort: {
+      ...(sortBy ? { [`${sortBy}`]: 1 } : {}),
+      ...(sortByDesc ? { [`${sortByDesc}`]: -1 } : {}),
+    },
+    populate: {
+      path: 'owner',
+      select: 'email subscription -_id'
+    },
+  })
+  const { docs: contacts, totalDocs: total } = data
+
+  return { total: total.toString(), page, limit, contacts }
+}
+
+const getContactById = async (contactId, userId) => {
+  const data = await Contact.findOne({
+    _id: contactId,
+    owner: userId,
+  }).populate({
+    path: 'owner',
+    select: 'email subscription -_id',
+  })
   return data
 }
 
-const getContactById = async contactId => {
-  const data = await Contact.findOne({ _id: contactId })
+const addContact = async (userId, body) => {
+  const data = await Contact.create({ ...body, owner: userId })
   return data
 }
 
-const addContact = async body => {
-  const data = await Contact.create(body)
-  return data
-}
-
-const updateContact = async (contactId, body) => {
-  const data = await Contact.findByIdAndUpdate(
-    { _id: contactId },
+const updateContact = async (contactId, body, userId) => {
+  const data = await Contact.findOneAndUpdate(
+    { _id: contactId, owner: userId },
     { ...body },
     { new: true },
   )
   return data
 }
 
-const removeContact = async contactId => {
-  const data = await Contact.findByIdAndRemove({ _id: contactId })
-  return data
+const updateContactStatus = async (userId, contactId, body) => {
+  if (Object.keys(body).length !== 0) {
+    const result = await Contact.findOneAndUpdate(
+      { _id: contactId, owner: userId },
+      { ...body },
+      { new: true },
+    )
+    return result
+  } else {
+    return null
+  }
 }
 
-const updateContactStatus = (contactId, body) => {
-  return Contact.findByIdAndUpdate({ _id: contactId }, body, { new: true })
+const removeContact = async (contactId, userId) => {
+  const data = await Contact.findOneAndRemove({
+    _id: contactId,
+    owner: userId,
+  })
+  return data
 }
 
 module.exports = {
@@ -38,6 +76,6 @@ module.exports = {
   getContactById,
   addContact,
   updateContact,
-  removeContact,
   updateContactStatus,
+  removeContact,
 }

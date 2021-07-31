@@ -1,6 +1,7 @@
 const Joi = require('joi')
+const { HttpCode } = require('../service/constants')
 
-const schemaCreateContact = Joi.object({
+const schemaValidateContact = Joi.object({
   name: Joi.string().min(3).max(30).required(),
   email: Joi.string().email().required(),
   phone: Joi.string()
@@ -19,28 +20,46 @@ const schemaUpdateContact = Joi.object({
 })
 
 const schemaUpdateStatusContact = Joi.object({
-  favorite: Joi.boolean().default(false),
+  favorite: Joi.boolean().default(false).required(),
 })
 
-const validate = (schema, body, next) => {
-  const { error } = schema.validate(body)
+const schemaValidateAuth = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(7).required(),
+})
+
+const schemaValidateUpdateSub = Joi.object({
+  subscription: Joi.any().valid('starter', 'pro', 'business').required(),
+})
+
+const validate = (schema, obj, next) => {
+  const { error } = schema.validate(obj)
   if (error) {
     const [{ message }] = error.details
     return next({
-      status: 400,
-      message,
-      data: 'Bad request',
+      status: HttpCode.BAD_REQUEST,
+      message: `Filed: ${message.replace(/"/g, '')}`,
     })
   }
   next()
 }
 
-module.exports.createValidateContact = (req, res, next) => {
-  return validate(schemaCreateContact, req.body, next)
+module.exports.validateContact = (req, _res, next) => {
+  return validate(schemaValidateContact, req.body, next)
 }
-module.exports.updateValidateContact = (req, res, next) => {
+
+module.exports.validateAuth = (req, _res, next) => {
+  return validate(schemaValidateAuth, req.body, next)
+}
+
+module.exports.validateUpdateSub = (req, _res, next) => {
+  return validate(schemaValidateUpdateSub, req.body, next)
+}
+
+module.exports.updateValidateContact = (req, _res, next) => {
   return validate(schemaUpdateContact, req.body, next)
 }
-module.exports.validateUpdateStatus = (req, res, next) => {
+
+module.exports.validateUpdateStatus = (req, _res, next) => {
   return validate(schemaUpdateStatusContact, req.body, next)
 }

@@ -4,7 +4,6 @@ require('dotenv').config()
 const { DB_HOST } = process.env
 
 const db = mongoose.connect(DB_HOST, {
-  promiseLibrary: global.Promise,
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifieldTopology: true,
