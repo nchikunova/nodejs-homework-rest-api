@@ -62,20 +62,23 @@ const login = async (req, res, next) => {
 }
 
 const logout = async (req, res, next) => {
-  const { id } = req.user
+  const { id, email } = req.user
+  console.log('=== logout ===', email)
   await Users.updateToken(id, null)
   return res.sendStatus(HttpCode.NO_CONTENT)
 }
 
 const currentUser = async (req, res, next) => {
   try {
+    const { email, subscription } = req.user
+    console.log('=== current user ===', email)
     return res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,
       data: {
         user: {
-          email: req.user.email,
-          subscription: req.user.subscription,
+          email,
+          subscription,
         },
       },
     })
@@ -85,9 +88,10 @@ const currentUser = async (req, res, next) => {
 }
 
 const updateSub = async (req, res, next) => {
-  const id = req.user.id
+  const { id } = req.user
+  const { subscription } = req.body
   try {
-    await Users.updateSubUser(id, req.body.subscription)
+    await Users.updateSubUser(id, subscription)
     const user = await Users.findById(id)
     return res.json({
       status: 'success',
