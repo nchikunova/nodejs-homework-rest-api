@@ -5,8 +5,8 @@ const {
   validateContact,
   updateValidateContact,
   validateUpdateStatus,
-} = require('../../service/validation')
-const guard = require('../../service/guard')
+} = require('../../services/validation')
+const guard = require('../../services/guard')
 
 router
   .get('/', guard, contactsController.listContacts)

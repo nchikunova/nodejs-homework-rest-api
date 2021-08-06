@@ -2,15 +2,16 @@ const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
-const { HttpCode } = require('./service/constants')
+const { HttpCode } = require('./services/constants')
 
 const contactsRouter = require('./routes/api/contacts')
 const usersRouter = require('./routes/api/users')
-const { createAccountLimiter } = require('./service/rate-limit')
-
+const { createAccountLimiter } = require('./services/rate-limit')
 const app = express()
-
+const path = require('path')
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
+
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(helmet())
 app.use(logger(formatsLogger))

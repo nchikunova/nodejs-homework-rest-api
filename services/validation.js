@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { HttpCode } = require('../service/constants')
+const { HttpCode } = require('./constants')
 
 const schemaValidateContact = Joi.object({
   name: Joi.string().min(3).max(30).required(),
@@ -44,22 +44,20 @@ const validate = (schema, obj, next) => {
   next()
 }
 
-module.exports.validateContact = (req, _res, next) => {
-  return validate(schemaValidateContact, req.body, next)
-}
-
-module.exports.validateAuth = (req, _res, next) => {
-  return validate(schemaValidateAuth, req.body, next)
-}
-
-module.exports.validateUpdateSub = (req, _res, next) => {
-  return validate(schemaValidateUpdateSub, req.body, next)
-}
-
-module.exports.updateValidateContact = (req, _res, next) => {
-  return validate(schemaUpdateContact, req.body, next)
-}
-
-module.exports.validateUpdateStatus = (req, _res, next) => {
-  return validate(schemaUpdateStatusContact, req.body, next)
+module.exports = {
+  validateContact: (req, _res, next) => {
+    return validate(schemaValidateContact, req.body, next)
+  },
+  validateAuth: (req, _res, next) => {
+    return validate(schemaValidateAuth, req.body, next)
+  },
+  validateUpdateSub: (req, _res, next) => {
+    return validate(schemaValidateUpdateSub, req.body, next)
+  },
+  updateValidateContact: (req, _res, next) => {
+    return validate(schemaUpdateContact, req.body, next)
+  },
+  validateUpdateStatus: (req, _res, next) => {
+    return validate(schemaUpdateStatusContact, req.body, next)
+  }
 }

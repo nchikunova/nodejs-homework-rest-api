@@ -1,5 +1,5 @@
 const Contacts = require('../model/contacts')
-const { HttpCode } = require('../service/constants')
+const { HttpCode } = require('../services/constants')
 
 const listContacts = async (req, res, next) => {
   try {
@@ -92,15 +92,6 @@ const updateContact = async (req, res, next) => {
 }
 
 const updateContactStatus = async (req, res, next) => {
-  // Checking field favorite in validation file as required \\
-  // if (!{}.hasOwnProperty.call(req.body, 'favorite')) {
-  //   res.status(400).json({
-  //     status: 'error',
-  //     code: 400,
-  //     message: 'Missing field favorite',
-  //   })
-  //   return
-  // }
   try {
     const userId = req.user?.id
     const contact = await Contacts.updateContactStatus(
