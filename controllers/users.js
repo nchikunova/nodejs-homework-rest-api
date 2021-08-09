@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken')
 const Users = require('../model/users')
-const { HttpCode } = require('../service/constants')
+const fs = require('fs/promises')
+const path = require('path')
+const { HttpCode } = require('../services/constants')
+const UploadAvatarService = require('../services/local-upload')
+
 require('dotenv').config()
 const { SECRET_KEY } = process.env
 
@@ -22,6 +26,7 @@ const signup = async (req, res, next) => {
         user: {
           email: newUser.email,
           subscription: newUser.subscription,
+          avatarURL: newUser.avatarURL,
         },
       },
     })
@@ -63,7 +68,7 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   const { id, email } = req.user
-  console.log('=== logout ===', email)
+  console.log('🚀 ~ file: users.js ~ line 66 ~ logout ~ email', email)
   await Users.updateToken(id, null)
   return res.sendStatus(HttpCode.NO_CONTENT)
 }
@@ -71,7 +76,7 @@ const logout = async (req, res, next) => {
 const currentUser = async (req, res, next) => {
   try {
     const { email, subscription } = req.user
-    console.log('=== current user ===', email)
+    console.log('🚀 ~ file: users.js ~ line 74 ~ currentUser ~ email', email)
     return res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,
@@ -108,10 +113,36 @@ const updateSub = async (req, res, next) => {
   }
 }
 
+const updateAvatar = async (req, res, next) => {
+  try {
+    const { id } = req.user
+    const uploads = new UploadAvatarService('avatars')
+    const avatarUrl = await uploads.saveAvatar({ idUser: id, file: req.file })
+    console.log('🚀 ~ file: users.js ~ line 121 ~ updateAvatar ~ avatarUrl', req.user.avatarURL)
+
+    try {
+      await fs.unlink(path.join('public', req.user.avatarURL))
+      console.log("🚀 ~ file: users.js ~ line 125 ~ updateAvatar ~ 'public', req.user.avatarURL", 'public', req.user.avatarURL)
+    } catch (e) {
+      console.log('🚀 ~ file: users.js ~ line 127 ~ updateAvatar ~ error', e.message)
+    }
+
+    await Users.updateAvatar(id, avatarUrl)
+    return res.json({
+      status: 'success',
+      code: HttpCode.OK,
+      data: { avatarUrl },
+    })
+  } catch (e) {
+    next(e)
+  }
+}
+
 module.exports = {
   signup,
   login,
   logout,
   currentUser,
   updateSub,
+  updateAvatar
 }
