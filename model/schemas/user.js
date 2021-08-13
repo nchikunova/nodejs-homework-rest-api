@@ -2,6 +2,8 @@ const { Schema, model } = require('mongoose')
 const bcrypt = require('bcryptjs')
 const SALT_WORK_FACTORY = 8
 const gravatar = require('gravatar')
+const { nanoid } = require('nanoid')
+
 const userSchema = new Schema(
   {
     email: {
@@ -32,8 +34,17 @@ const userSchema = new Schema(
         return gravatar.url(this.email, { s: '250' }, true)
       },
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verifyToken: {
+      type: String,
+      required: [true, 'Verify token is required'],
+      default: nanoid(),
+    },
   },
-  { versionKey: false },
+  { versionKey: false, timestamps: true },
 )
 
 userSchema.pre('save', async function (next) {
